@@ -30,6 +30,7 @@ import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.types.MeterType;
 import io.openems.edge.bridge.http.api.BridgeHttp;
 import io.openems.edge.bridge.http.api.BridgeHttpFactory;
+import io.openems.edge.bridge.http.api.HttpError;
 import io.openems.edge.bridge.http.api.HttpResponse;
 import io.openems.edge.common.channel.BooleanWriteChannel;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
@@ -139,7 +140,7 @@ public class IoShellyEmImpl extends AbstractOpenemsComponent implements IoShelly
 		}
 	}
 
-	private void processHttpResult(HttpResponse<JsonElement> result, Throwable error) {
+	private void processHttpResult(HttpResponse<JsonElement> result, HttpError error) {
 		this._setSlaveCommunicationFailed(result == null);
 
 		Boolean relay0 = null;
@@ -236,7 +237,7 @@ public class IoShellyEmImpl extends AbstractOpenemsComponent implements IoShelly
 			this.calculateConsumptionEnergy.update(0);
 		} else {
 			this.calculateProductionEnergy.update(0);
-			this.calculateConsumptionEnergy.update(-activePower);
+			this.calculateConsumptionEnergy.update(activePower);
 		}
 	}
 
