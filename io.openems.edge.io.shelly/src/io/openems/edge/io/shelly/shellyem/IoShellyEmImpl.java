@@ -148,6 +148,7 @@ public class IoShellyEmImpl extends AbstractOpenemsComponent implements IoShelly
 		Integer reactivePower = null;
 		Integer voltage = null;
 		Integer current = null;
+		boolean hasUpdate = false; 
 		boolean overpower = false;
 
 		if (error != null) {
@@ -176,6 +177,9 @@ public class IoShellyEmImpl extends AbstractOpenemsComponent implements IoShelly
 					var singleReactivePower = round(getAsFloat(emeter, "reactive"));
 					var emeterVoltage = round(getAsFloat(emeter, "voltage") * 1000);
 					var isValid = getAsBoolean(emeter, "is_valid");
+					var update = getAsJsonObject(response, "update");
+
+					hasUpdate = getAsBoolean(update, "has_update");
 
 					if (isValid) {
 						if (this.sumEMeter1AndEMeter2) {
@@ -220,11 +224,11 @@ public class IoShellyEmImpl extends AbstractOpenemsComponent implements IoShelly
 
 		this._setRelay(relay0);
 		this.channel(IoShellyEm.ChannelId.RELAY_OVERPOWER_EXCEPTION).setNextValue(overpower);
+		this.channel(IoShellyEm.ChannelId.HAS_UPDATE).setNextValue(hasUpdate);
 		this._setActivePower(activePower);
 		this._setReactivePower(reactivePower);
 		this._setVoltage(voltage);
 		this._setCurrent(current);
-
 	}
 
 	private void calculateEnergy() {

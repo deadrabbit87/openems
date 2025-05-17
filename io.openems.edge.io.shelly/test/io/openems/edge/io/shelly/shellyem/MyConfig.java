@@ -13,6 +13,8 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		private String ip;
 		private MeterType type;
 		private SinglePhase phase;
+		private Boolean sumEmeter1AndEmeter2;
+		private int channel;
 
 		private Builder() {
 		}
@@ -34,6 +36,16 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 
 		public Builder setType(MeterType type) {
 			this.type = type;
+			return this;
+		}
+		
+		public Builder setSumEmeter1AndEmeter2(boolean sumEmeter1AndEmeter2) {
+			this.sumEmeter1AndEmeter2 = sumEmeter1AndEmeter2; 
+			return this; 
+		}
+	
+		public Builder setChannel(int channel) {
+			this.channel = channel; 
 			return this;
 		}
 
@@ -75,13 +87,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 
 	@Override
 	public boolean sumEmeter1AndEmeter2() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.builder.sumEmeter1AndEmeter2;
 	}
 
 	@Override
 	public int channel() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.builder.channel; 
 	}
 }
