@@ -2,6 +2,7 @@ package io.openems.edge.meter.evcc;
 
 import static io.openems.common.utils.JsonUtils.getAsJsonObject;
 import static io.openems.common.utils.JsonUtils.getAsFloat;
+import static io.openems.common.utils.JsonUtils.getAsJsonArray; 
 import static java.lang.Math.round;
 
 
@@ -63,12 +64,12 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 	private void activate(ComponentContext context, Config config) {
 		super.activate(context, config.id(), config.alias(), config.enabled());
 		this.config = config;
-		this.baseUrl = "http://" + config.ip() + ":" + config.port()+ "/api/state";
+		this.baseUrl = "http://" + config.ip() + ":" + config.port();
 		
 		this.httpBridge = this.httpBridgeFactory.get();
 		
 		if (this.isEnabled()) {
-			this.httpBridge.subscribeJsonEveryCycle(this.baseUrl + "/status", this::processHttpResult);
+			this.httpBridge.subscribeJsonEveryCycle(this.baseUrl + "/api/state", this::processHttpResult);
 		}
 
 	}
@@ -101,7 +102,15 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 		} else {
 			try {
 				var response = getAsJsonObject(result.data()); 
-				activePower = round(getAsFloat(response, "homePower"));
+	            var resultObject = response.getAsJsonObject("result");
+				activePower = round(getAsFloat(resultObject, "homePower"));
+				
+				var loadpoints = getAsJsonArray(resultObject, "loadpoints");
+				for (int i = 0; i < loadpoints.size(); i++) {
+					var loadpoint = loadpoints.get(i); 
+					var chargePower = round(getAsFloat(loadpoint, "chargePower")); 
+					System.out.println(chargePower); 
+				}
 			} catch (OpenemsNamedException e) {
 				this.logDebug(this.log, e.getMessage());
 			}
