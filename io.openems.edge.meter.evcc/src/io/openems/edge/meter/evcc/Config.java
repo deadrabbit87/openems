@@ -19,6 +19,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 	
 	@AttributeDefinition(name = "IP-Address", description = "The IP address of the evcc instance.")
 	String ip();
+	
+	@AttributeDefinition(name = "Port", description = "The port of the evcc instance.")
+	String port() default "7070";
 
 	String webconsole_configurationFactory_nameHint() default "io.openems.edge.meter.evcc [{id}]";
 

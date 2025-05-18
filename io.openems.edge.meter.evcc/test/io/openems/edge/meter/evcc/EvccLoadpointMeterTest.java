@@ -5,7 +5,7 @@ import org.junit.Test;
 import io.openems.edge.common.test.AbstractComponentTest.TestCase;
 import io.openems.edge.common.test.ComponentTest;
 
-public class MyDeviceTest {
+public class EvccLoadpointMeterTest {
 
 	@Test
 	public void test() throws Exception {

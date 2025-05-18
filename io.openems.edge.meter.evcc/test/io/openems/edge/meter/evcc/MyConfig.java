@@ -7,7 +7,8 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 
 	protected static class Builder {
 		private String id;
-//		private String setting0;
+		private String ip; 
+		private String port;
 
 		private Builder() {
 		}
@@ -16,11 +17,16 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 			this.id = id;
 			return this;
 		}
+		
+		public Builder setIp(String ip) {
+			this.ip = ip;
+			return this;
+		}
 
-//		public Builder setSetting0(String setting0) {
-//			this.setting0 = setting0;
-//			return this;
-//		}
+		public Builder setPort(String port) {
+			this.port = port;
+			return this;
+		}
 
 		public MyConfig build() {
 			return new MyConfig(this);
@@ -43,9 +49,14 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		this.builder = builder;
 	}
 
-//	@Override
-//	public String setting0() {
-//		return this.builder.setting0;
-//	}
+	@Override
+	public String port() {
+		return this.builder.port;
+	}
+	
+	@Override
+	public String ip() {
+		return this.builder.ip;
+	}
 
 }
