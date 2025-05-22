@@ -2,6 +2,7 @@ package io.openems.edge.meter.evcc;
 
 import static io.openems.common.utils.JsonUtils.getAsJsonObject;
 import static io.openems.common.utils.JsonUtils.getAsFloat;
+import static io.openems.common.utils.JsonUtils.getAsInt;
 import static io.openems.common.utils.JsonUtils.getAsJsonArray; 
 import static java.lang.Math.round;
 
@@ -96,6 +97,9 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 		
 		// Prepare variables
 		Integer activePower = null; 
+		Integer currentL1 = null;
+		Integer currentL2 = null;
+		Integer currentL3 = null;
 		
 		if (error != null) {
 			this.logDebug(this.log, error.getMessage());
@@ -109,8 +113,25 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 				for (int i = 0; i < loadpoints.size(); i++) {
 					var loadpoint = loadpoints.get(i); 
 					var chargePower = round(getAsFloat(loadpoint, "chargePower")); 
-					System.out.println(chargePower); 
-				}
+					System.out.println("charge power loadpoint " + i + " : " + chargePower + " W"); 
+					
+				    var chargeCurrents = getAsJsonArray(loadpoint, "chargeCurrents"); 
+				    for (int j = 0; j < chargeCurrents.size(); j++) {
+				        var current = round(getAsFloat(chargeCurrents.get(j)) * 1000); 
+				        System.out.println("L" + (j + 1) + ": " + current); 
+				        switch (j + 1) {
+			            case 1:
+			                this._setCurrentL1(current);
+			                break;
+			            case 2:
+			                this._setCurrentL2(current);
+			                break;
+			            case 3:
+			                this._setCurrentL3(current);
+			                break;
+				        }
+				    }
+					}
 			} catch (OpenemsNamedException e) {
 				this.logDebug(this.log, e.getMessage());
 			}
