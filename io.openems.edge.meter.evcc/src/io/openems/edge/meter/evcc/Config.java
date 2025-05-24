@@ -4,7 +4,7 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition(//
-		name = "io.openems.edge.meter.evcc", //
+		name = "Meter evcc loadpoint", //
 		description = "Displays a evcc loadpoint as consumption meter")
 @interface Config {
 
@@ -22,6 +22,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 	
 	@AttributeDefinition(name = "Port", description = "The port of the evcc instance.")
 	String port() default "7070";
+	
+	@AttributeDefinition(name = "Loadpoint", description = "Loadpoint number in evcc")
+	String loadpointNumber() default "0";
 
 	String webconsole_configurationFactory_nameHint() default "io.openems.edge.meter.evcc [{id}]";
 
