@@ -33,7 +33,7 @@ public interface EvccLoadpointMeter extends OpenemsComponent, EventHandler, Elec
 			return this.doc;
 		}
 	}
-	
+
 	/**
 	 * Gets the Channel for {@link ChannelId#SLAVE_COMMUNICATION_FAILED}.
 	 *
@@ -42,7 +42,7 @@ public interface EvccLoadpointMeter extends OpenemsComponent, EventHandler, Elec
 	public default StateChannel getSlaveCommunicationFailedChannel() {
 		return this.channel(ChannelId.SLAVE_COMMUNICATION_FAILED);
 	}
-	
+
 	/**
 	 * Internal method to set the 'nextValue' on
 	 * {@link ChannelId#SLAVE_COMMUNICATION_FAILED} Channel.

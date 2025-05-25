@@ -16,13 +16,13 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 	@AttributeDefinition(name = "Is enabled?", description = "Is this Component enabled?")
 	boolean enabled() default true;
-	
+
 	@AttributeDefinition(name = "IP-Address", description = "The IP address of the evcc instance.")
 	String ip();
-	
+
 	@AttributeDefinition(name = "Port", description = "The port of the evcc instance.")
 	String port() default "7070";
-	
+
 	@AttributeDefinition(name = "Loadpoint", description = "Loadpoint number in evcc")
 	String loadpointNumber() default "0";
 

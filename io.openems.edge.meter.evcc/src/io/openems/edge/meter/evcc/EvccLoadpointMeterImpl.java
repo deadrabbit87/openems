@@ -3,9 +3,8 @@ package io.openems.edge.meter.evcc;
 import static io.openems.common.utils.JsonUtils.getAsJsonObject;
 import static io.openems.common.utils.JsonUtils.getAsFloat;
 import static io.openems.common.utils.JsonUtils.getAsInt;
-import static io.openems.common.utils.JsonUtils.getAsJsonArray; 
+import static io.openems.common.utils.JsonUtils.getAsJsonArray;
 import static java.lang.Math.round;
-
 
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -48,19 +47,20 @@ import io.openems.edge.timedata.api.utils.CalculateEnergyFromPower;
 @EventTopics({ //
 		EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE, //
 })
-public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements EvccLoadpointMeter, OpenemsComponent, TimedataProvider, EventHandler, ElectricityMeter {
+public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent
+		implements EvccLoadpointMeter, OpenemsComponent, TimedataProvider, EventHandler, ElectricityMeter {
 
 	private final CalculateEnergyFromPower calculateProductionEnergy = new CalculateEnergyFromPower(this,
 			ElectricityMeter.ChannelId.ACTIVE_PRODUCTION_ENERGY);
 	private final CalculateEnergyFromPower calculateConsumptionEnergy = new CalculateEnergyFromPower(this,
 			ElectricityMeter.ChannelId.ACTIVE_CONSUMPTION_ENERGY);
-	
+
 	private Config config = null;
 	private final Logger log = LoggerFactory.getLogger(EvccLoadpointMeterImpl.class);
 
 	private MeterType meterType = MeterType.CONSUMPTION_METERED;
 	private String baseUrl;
-	
+
 	@Reference(policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.OPTIONAL)
 	private volatile Timedata timedata;
 
@@ -81,9 +81,9 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 		super.activate(context, config.id(), config.alias(), config.enabled());
 		this.config = config;
 		this.baseUrl = "http://" + config.ip() + ":" + config.port();
-		
+
 		this.httpBridge = this.httpBridgeFactory.get();
-		
+
 		if (this.isEnabled()) {
 			this.httpBridge.subscribeJsonEveryCycle(this.baseUrl + "/api/state", this::processHttpResult);
 		}
@@ -94,7 +94,7 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 	protected void deactivate() {
 		super.deactivate();
 	}
-	
+
 	@Override
 	public String debugLog() {
 		var b = new StringBuilder();
@@ -113,10 +113,10 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 			-> this.calculateEnergy();
 		}
 	}
-	
+
 	private void processHttpResult(HttpResponse<JsonElement> result, Throwable error) {
 		this._setSlaveCommunicationFailed(result == null);
-		
+
 		// Prepare variables
 		Integer activePower = null;
 		Integer activePowerL1 = null;
@@ -128,55 +128,55 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 		Integer currentL1 = null;
 		Integer currentL2 = null;
 		Integer currentL3 = null;
-		Integer loadpointNumber = Integer.parseInt(config.loadpointNumber()); 
-		
+		Integer loadpointNumber = Integer.parseInt(config.loadpointNumber());
+
 		if (error != null) {
 			this.logDebug(this.log, error.getMessage());
 		} else {
 			try {
-				var response = getAsJsonObject(result.data()); 
-	            var resultObject = response.getAsJsonObject("result");				
+				var response = getAsJsonObject(result.data());
+				var resultObject = response.getAsJsonObject("result");
 				var loadpoints = getAsJsonArray(resultObject, "loadpoints");
-				
-				for (int i = 0; i < loadpoints.size(); i++) {
-					var loadpoint = loadpoints.get(i); 
-					var chargePower = round(getAsFloat(loadpoint, "chargePower")); 
-										
-				    var chargeCurrents = getAsJsonArray(loadpoint, "chargeCurrents"); 
-				    var chargeVoltages = getAsJsonArray(loadpoint, "chargeVoltages"); 
-				    
-				    if(i == loadpointNumber) {
-				    	activePower = chargePower;  
 
-				    for (int j = 0; j < chargeCurrents.size(); j++) {
-				        var current = round(getAsFloat(chargeCurrents.get(j)) * 1000); 
-				        var voltage = round(getAsFloat(chargeVoltages.get(j)) * 1000); 
-				        
-					        switch (j + 1) {
-				            case 1:
-				            	voltageL1 = voltage; 
-				            	currentL1 = current;
-				            	activePowerL1 = (voltage / 1000) * (current / 1000);  
-				                break;
-				            case 2:
-				            	voltageL2 = voltage; 
-				            	currentL2 = current; 
-				            	activePowerL2 = (voltage / 1000) * (current / 1000);  
-				                break;
-				            case 3:
-				            	voltageL3 = voltage;  
-				            	currentL3 = current; 
-				            	activePowerL3 = (voltage / 1000) * (current / 1000);  
-				                break;
-					        }
-				    }
+				for (int i = 0; i < loadpoints.size(); i++) {
+					var loadpoint = loadpoints.get(i);
+					var chargePower = round(getAsFloat(loadpoint, "chargePower"));
+
+					var chargeCurrents = getAsJsonArray(loadpoint, "chargeCurrents");
+					var chargeVoltages = getAsJsonArray(loadpoint, "chargeVoltages");
+
+					if (i == loadpointNumber) {
+						activePower = chargePower;
+
+						for (int j = 0; j < chargeCurrents.size(); j++) {
+							var current = round(getAsFloat(chargeCurrents.get(j)) * 1000);
+							var voltage = round(getAsFloat(chargeVoltages.get(j)) * 1000);
+
+							switch (j + 1) {
+							case 1:
+								voltageL1 = voltage;
+								currentL1 = current;
+								activePowerL1 = (voltage / 1000) * (current / 1000);
+								break;
+							case 2:
+								voltageL2 = voltage;
+								currentL2 = current;
+								activePowerL2 = (voltage / 1000) * (current / 1000);
+								break;
+							case 3:
+								voltageL3 = voltage;
+								currentL3 = current;
+								activePowerL3 = (voltage / 1000) * (current / 1000);
+								break;
+							}
+						}
 					}
 				}
 			} catch (OpenemsNamedException e) {
 				this.logDebug(this.log, e.getMessage());
 			}
 		}
-		
+
 		// Actually set Channels
 		this._setActivePower(activePower);
 		this._setActivePowerL1(activePowerL1);
@@ -191,7 +191,7 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 		this._setVoltageL3(voltageL3);
 		this._setCurrentL3(currentL3);
 	}
-	
+
 	/**
 	 * Calculate the Energy values from ActivePower.
 	 */
@@ -212,7 +212,7 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 
 	@Override
 	public MeterType getMeterType() {
-		return this.meterType; 
+		return this.meterType;
 	}
 
 	@Override
