@@ -118,7 +118,13 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 		this._setSlaveCommunicationFailed(result == null);
 		
 		// Prepare variables
-		Integer activePower = null; 
+		Integer activePower = null;
+		Integer activePowerL1 = null;
+		Integer activePowerL2 = null;
+		Integer activePowerL3 = null;
+		Integer voltageL1 = null;
+		Integer voltageL2 = null;
+		Integer voltageL3 = null;
 		Integer currentL1 = null;
 		Integer currentL2 = null;
 		Integer currentL3 = null;
@@ -129,44 +135,43 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 		} else {
 			try {
 				var response = getAsJsonObject(result.data()); 
-	            var resultObject = response.getAsJsonObject("result");
-				activePower = round(getAsFloat(resultObject, "homePower"));
-				
+	            var resultObject = response.getAsJsonObject("result");				
 				var loadpoints = getAsJsonArray(resultObject, "loadpoints");
+				
 				for (int i = 0; i < loadpoints.size(); i++) {
 					var loadpoint = loadpoints.get(i); 
 					var chargePower = round(getAsFloat(loadpoint, "chargePower")); 
-					System.out.println("charge power loadpoint " + i + " : " + chargePower + " W"); 
-					
+										
 				    var chargeCurrents = getAsJsonArray(loadpoint, "chargeCurrents"); 
 				    var chargeVoltages = getAsJsonArray(loadpoint, "chargeVoltages"); 
 				    
+				    if(i == loadpointNumber) {
+				    	activePower = chargePower;  
+
 				    for (int j = 0; j < chargeCurrents.size(); j++) {
 				        var current = round(getAsFloat(chargeCurrents.get(j)) * 1000); 
-				        var voltage = round(getAsFloat(chargeVoltages.get(j))); 
+				        var voltage = round(getAsFloat(chargeVoltages.get(j)) * 1000); 
 				        
-				        System.out.println("L" + (j + 1) + ": " + current); 
-				        System.out.println("L" + (j + 1) + ": " + voltage); 
-				        
-						// Actually set Channels
-				        if(loadpointNumber == j) {
 					        switch (j + 1) {
 				            case 1:
-				                this._setCurrentL1(current);
-				                this._setVoltageL1(voltage); 
+				            	voltageL1 = voltage; 
+				            	currentL1 = current;
+				            	activePowerL1 = (voltage / 1000) * (current / 1000);  
 				                break;
 				            case 2:
-				                this._setCurrentL2(current);
-				                this._setVoltageL2(voltage);
+				            	voltageL2 = voltage; 
+				            	currentL2 = current; 
+				            	activePowerL2 = (voltage / 1000) * (current / 1000);  
 				                break;
 				            case 3:
-				                this._setCurrentL3(current);
-				                this._setVoltageL3(voltage); 
+				            	voltageL3 = voltage;  
+				            	currentL3 = current; 
+				            	activePowerL3 = (voltage / 1000) * (current / 1000);  
 				                break;
 					        }
-				        }
 				    }
 					}
+				}
 			} catch (OpenemsNamedException e) {
 				this.logDebug(this.log, e.getMessage());
 			}
@@ -174,6 +179,17 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent implements 
 		
 		// Actually set Channels
 		this._setActivePower(activePower);
+		this._setActivePowerL1(activePowerL1);
+		this._setVoltageL1(voltageL1);
+		this._setCurrentL1(currentL1);
+
+		this._setActivePowerL2(activePowerL2);
+		this._setVoltageL2(voltageL2);
+		this._setCurrentL2(currentL2);
+
+		this._setActivePowerL3(activePowerL3);
+		this._setVoltageL3(voltageL3);
+		this._setCurrentL3(currentL3);
 	}
 	
 	/**

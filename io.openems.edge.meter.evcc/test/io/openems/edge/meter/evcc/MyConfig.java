@@ -9,6 +9,7 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		private String id;
 		private String ip; 
 		private String port;
+		private String loadpointNumber; 
 
 		private Builder() {
 		}
@@ -25,6 +26,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 
 		public Builder setPort(String port) {
 			this.port = port;
+			return this;
+		}
+		
+		public Builder setLoadpointNumber(String loadpointNumber) {
+			this.loadpointNumber = loadpointNumber;
 			return this;
 		}
 
@@ -58,5 +64,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	public String ip() {
 		return this.builder.ip;
 	}
+	
+	@Override
+	public String loadpointNumber() {
+		return this.builder.loadpointNumber;
+	}
+
 
 }
