@@ -73,6 +73,9 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent
 				ElectricityMeter.ChannelId.values(), //
 				EvccLoadpointMeter.ChannelId.values() //
 		);
+		ElectricityMeter.calculateAverageVoltageFromPhases(this);
+		ElectricityMeter.calculateSumCurrentFromPhases(this); 
+		ElectricityMeter.calculateSumActivePowerFromPhases(this);
 	}
 
 	@Activate
@@ -80,7 +83,6 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent
 		super.activate(context, config.id(), config.alias(), config.enabled());
 		this.config = config;
 		this.baseUrl = "http://" + config.ip() + ":" + config.port();
-
 		this.httpBridge = this.httpBridgeFactory.get();
 
 		if (this.isEnabled()) {
@@ -91,6 +93,8 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent
 
 	@Deactivate
 	protected void deactivate() {
+		this.httpBridgeFactory.unget(this.httpBridge);
+		this.httpBridge = null;
 		super.deactivate();
 	}
 
