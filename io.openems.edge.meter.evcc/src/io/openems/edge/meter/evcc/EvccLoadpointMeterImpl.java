@@ -207,8 +207,6 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent
 			this.calculateProductionEnergy.update(-activePower);
 			this.calculateConsumptionEnergy.update(0);
 		}
-		System.out.println(this.getActivePowerL1());
-		System.out.println("Zählertyp " + getMeterType()); 
 	}
 
 	@Override
