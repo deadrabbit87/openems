@@ -24,6 +24,7 @@ public class EvccLoadpointMeterTest {
 						.setIp("172.0.0.1") //
 						.setPort("7070") //
 						.setLoadpointNumber("0") //
+						.setMeterType("CONSUMPTION_METERED")
 						.build()) //
 
 				.next(new TestCase("Successful read response") //

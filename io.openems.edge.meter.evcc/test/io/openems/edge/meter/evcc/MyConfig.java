@@ -1,6 +1,7 @@
 package io.openems.edge.meter.evcc;
 
 import io.openems.common.test.AbstractComponentConfig;
+import io.openems.common.types.MeterType;
 
 @SuppressWarnings("all")
 public class MyConfig extends AbstractComponentConfig implements Config {
@@ -10,6 +11,7 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		private String ip;
 		private String port;
 		private String loadpointNumber;
+		private MeterType meterType; 
 
 		private Builder() {
 		}
@@ -32,6 +34,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		public Builder setLoadpointNumber(String loadpointNumber) {
 			this.loadpointNumber = loadpointNumber;
 			return this;
+		}
+		
+		public Builder setMeterType(String meterType) {
+			this.setMeterType(meterType); 
+			return this; 
 		}
 
 		public MyConfig build() {
@@ -68,6 +75,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	@Override
 	public String loadpointNumber() {
 		return this.builder.loadpointNumber;
+	}
+	
+	@Override
+	public MeterType type() {
+		return this.builder.meterType;
 	}
 
 }

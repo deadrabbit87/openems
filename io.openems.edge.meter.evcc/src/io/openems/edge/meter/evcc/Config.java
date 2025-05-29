@@ -3,6 +3,8 @@ package io.openems.edge.meter.evcc;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import io.openems.common.types.MeterType;
+
 @ObjectClassDefinition(//
 		name = "Meter evcc loadpoint", //
 		description = "Displays a evcc loadpoint as consumption meter")
@@ -25,6 +27,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 	@AttributeDefinition(name = "Loadpoint", description = "Loadpoint number in evcc")
 	String loadpointNumber() default "0";
+	
+	@AttributeDefinition(name = "Meter-Type", description = "What is measured by this Meter?")
+	MeterType type() default MeterType.CONSUMPTION_METERED;
 
 	String webconsole_configurationFactory_nameHint() default "io.openems.edge.meter.evcc [{id}]";
 
