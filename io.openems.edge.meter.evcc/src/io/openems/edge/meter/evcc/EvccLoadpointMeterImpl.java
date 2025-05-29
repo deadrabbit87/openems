@@ -44,7 +44,7 @@ import io.openems.edge.timedata.api.utils.CalculateEnergyFromPower;
 		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
 @EventTopics({ //
-		EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE, //
+		EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE, //
 })
 public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent
 		implements EvccLoadpointMeter, OpenemsComponent, TimedataProvider, EventHandler, ElectricityMeter {
@@ -73,9 +73,6 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent
 				ElectricityMeter.ChannelId.values(), //
 				EvccLoadpointMeter.ChannelId.values() //
 		);
-		ElectricityMeter.calculateAverageVoltageFromPhases(this);
-		ElectricityMeter.calculateSumCurrentFromPhases(this); 
-		ElectricityMeter.calculateSumActivePowerFromPhases(this);
 	}
 
 	@Activate
@@ -83,6 +80,7 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent
 		super.activate(context, config.id(), config.alias(), config.enabled());
 		this.config = config;
 		this.baseUrl = "http://" + config.ip() + ":" + config.port();
+
 		this.httpBridge = this.httpBridgeFactory.get();
 
 		if (this.isEnabled()) {
@@ -93,8 +91,6 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent
 
 	@Deactivate
 	protected void deactivate() {
-		this.httpBridgeFactory.unget(this.httpBridge);
-		this.httpBridge = null;
 		super.deactivate();
 	}
 
@@ -205,11 +201,11 @@ public class EvccLoadpointMeterImpl extends AbstractOpenemsComponent
 			this.calculateProductionEnergy.update(null);
 			this.calculateConsumptionEnergy.update(null);
 		} else if (activePower >= 0) {
-			this.calculateProductionEnergy.update(activePower);
-			this.calculateConsumptionEnergy.update(0);
-		} else {
 			this.calculateProductionEnergy.update(0);
-			this.calculateConsumptionEnergy.update(-activePower);
+			this.calculateConsumptionEnergy.update(activePower);
+		} else {
+			this.calculateProductionEnergy.update(-activePower);
+			this.calculateConsumptionEnergy.update(0);
 		}
 	}
 
