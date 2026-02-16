@@ -222,8 +222,8 @@ public class TimeOfUseGridTariffEvccApi {
 	 * @return the TimeOfUsePrices object containing tariff information.
 	 */
 	public TimeOfUsePrices getPrices() {
-		ZonedDateTime utcTime = ZonedDateTime.now(this.clock).withZoneSameInstant(ZoneId.of("UTC"));
-		TimeOfUsePrices prices = TimeOfUsePrices.from(utcTime, this.prices.get());
+		Instant now = clock.instant();
+		TimeOfUsePrices prices = TimeOfUsePrices.from(now, this.prices.get());
 		LOG.debug("Prices: {}", prices);
 		return prices;
 	}
