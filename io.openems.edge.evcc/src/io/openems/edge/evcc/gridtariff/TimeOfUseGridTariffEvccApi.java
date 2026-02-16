@@ -111,8 +111,8 @@ public class TimeOfUseGridTariffEvccApi {
 				ZonedDateTime now = ZonedDateTime.now(this.clock);
 				ZonedDateTime lastFullHour = now.withMinute(0).withSecond(0).withNano(0);
 				ZonedDateTime utcTime = lastFullHour.withZoneSameInstant(ZoneId.of("UTC"));
-				newPrices = TimeOfUsePrices.from(utcTime, newPrices);
-
+				newPrices = TimeOfUsePrices.from(utcTime.toInstant(), newPrices);
+				
 				// replace already known prices if they contain future timestamps
 				if (!newPrices.isEmpty()) {
 					this.prices.set(newPrices);
