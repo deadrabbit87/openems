@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -151,7 +152,7 @@ public class TimeOfUseGridTariffEvccApi {
 	 */
 	public TimeOfUsePrices parsePrices(String jsonData) {
 		try {
-			var result = ImmutableSortedMap.<ZonedDateTime, Double>naturalOrder();
+			var result = ImmutableSortedMap.<Instant, Double>naturalOrder();
 			
 			JsonObject jsonObject = JsonUtils.parseToJsonObject(jsonData);
 	        JsonObject resultObject = jsonObject.has("result") 
@@ -175,7 +176,7 @@ public class TimeOfUseGridTariffEvccApi {
 
 				String startString = JsonUtils.getAsString(element, "start");
 				ZonedDateTime startTime = ZonedDateTime.parse(startString);
-				ZonedDateTime utcTime = startTime.withZoneSameInstant(ZoneId.of("UTC"));
+				Instant utcInstant = startTime.toInstant();
 
 				if (duration < 0) {
 					String endString = JsonUtils.getAsString(element, "end");
@@ -186,17 +187,17 @@ public class TimeOfUseGridTariffEvccApi {
 
 				switch ((int) duration) {
 				case 60:
-					result.put(utcTime, value);
-					result.put(utcTime.plusMinutes(15), value);
-					result.put(utcTime.plusMinutes(30), value);
-					result.put(utcTime.plusMinutes(45), value);
+					result.put(utcInstant, value);
+					result.put(utcInstant.plus(Duration.ofMinutes(15)), value);
+					result.put(utcInstant.plus(Duration.ofMinutes(30)), value);
+					result.put(utcInstant.plus(Duration.ofMinutes(45)), value);
 					break;
 				case 30:
-					result.put(utcTime, value);
-					result.put(utcTime.plusMinutes(15), value);
+					result.put(utcInstant, value);
+					result.put(utcInstant.plus(Duration.ofMinutes(15)), value);
 					break;
 				case 15:
-					result.put(utcTime, value);
+					result.put(utcInstant, value);
 					break;
 				default:
 					LOG.error("Unexpected duration for rate: {} minutes", duration);
