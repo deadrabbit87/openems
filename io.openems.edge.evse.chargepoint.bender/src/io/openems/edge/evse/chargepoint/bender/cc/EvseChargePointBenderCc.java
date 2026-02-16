@@ -8,7 +8,6 @@ import static io.openems.common.types.OpenemsType.BOOLEAN;
 import static io.openems.common.types.OpenemsType.INTEGER;
 import static io.openems.common.types.OpenemsType.STRING;
 
-import io.openems.common.channel.Unit;
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.types.OpenemsType;
 import io.openems.edge.common.channel.Doc;
@@ -105,26 +104,6 @@ public interface EvseChargePointBenderCc extends OpenemsComponent {
 				.accessMode(WRITE_ONLY) //
 				.onChannelSetNextWriteMirrorToDebugChannel(DEBUG_SET_HEMS_CURRENT)),
 
-		/**
-		 * Active Power L1 (Register 206-207, uint32, W). Used internally for
-		 * phase-rotated mapping.
-		 */
-		ACTIVE_POWER_L1(Doc.of(INTEGER) //
-				.unit(Unit.WATT)),
-
-		/**
-		 * Active Power L2 (Register 208-209, uint32, W). Used internally for
-		 * phase-rotated mapping.
-		 */
-		ACTIVE_POWER_L2(Doc.of(INTEGER) //
-				.unit(Unit.WATT)),
-
-		/**
-		 * Active Power L3 (Register 210-211, uint32, W). Used internally for
-		 * phase-rotated mapping.
-		 */
-		ACTIVE_POWER_L3(Doc.of(INTEGER) //
-				.unit(Unit.WATT)),
 		;
 
 		private final Doc doc;
